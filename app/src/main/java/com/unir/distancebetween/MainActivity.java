@@ -1,6 +1,7 @@
 package com.unir.distancebetween;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -36,6 +37,12 @@ public class MainActivity extends AppCompatActivity {
         PROVIDER = LocationManager.GPS_PROVIDER;
         p1 = new Ponto();
         p2 = new Ponto();
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_NETWORK_STATE,
+                    Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+        }
     }
 
     public void reset(View v){
@@ -75,16 +82,10 @@ public class MainActivity extends AppCompatActivity {
         edtPto.setText(p2.imprimirFormatado());
     }
 
+    @SuppressLint("MissingPermission")
     public Ponto getPonto(){
         LocationManager mLocManager = (LocationManager) getSystemService(MainActivity.this.LOCATION_SERVICE);
         LocationListener mLocListener = new MinhaLocalizacao();
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_NETWORK_STATE}, 1);
-            return null;
-        }
 
         mLocManager.requestLocationUpdates(PROVIDER, 0, 0, mLocListener);
         Location localAtual = mLocManager.getLastKnownLocation(PROVIDER);
